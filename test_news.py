@@ -7,10 +7,12 @@ from fetcher import Article
 class TestArticle(unittest.TestCase):
     def test_article_creation(self):
         a = Article(title="Test", url="https://example.com",
-                    source="雪球", category="stock", score=80.0)
+                    source="雪球", category="stock", score=80.0,
+                    summary="这是一条摘要")
         self.assertEqual(a.title, "Test")
         self.assertEqual(a.category, "stock")
         self.assertEqual(a.score, 80.0)
+        self.assertEqual(a.summary, "这是一条摘要")
 
 
 class TestNormalizeTitle(unittest.TestCase):

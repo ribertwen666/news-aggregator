@@ -2,7 +2,7 @@
 import argparse
 from fetcher import fetch_all
 from ranker import deduplicate
-from display import display
+from display import display, export_html
 
 
 def main():
@@ -10,6 +10,7 @@ def main():
     parser.add_argument("--category", choices=["stock", "finance", "tech", "politics", "weird", "all"],
                         default="all", help="按类别筛选（默认: all）")
     parser.add_argument("--limit", type=int, default=20, help="显示条数（默认: 20）")
+    parser.add_argument("--html", type=str, default=None, help="导出 HTML 文件路径")
     args = parser.parse_args()
 
     print("正在聚合新闻...", end="", flush=True)
@@ -17,7 +18,12 @@ def main():
     print(f" 抓取 {len(articles)} 条")
 
     top = deduplicate(articles)[:args.limit]
-    display(top, category=args.category)
+
+    if args.html:
+        export_html(top, args.html, category=args.category)
+        print(f"已导出: {args.html}")
+    else:
+        display(top, category=args.category)
 
 
 if __name__ == "__main__":
