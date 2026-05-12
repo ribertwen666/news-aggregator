@@ -116,7 +116,7 @@ def classify_by_keywords(title: str) -> str:
     scores = {"stock": stock_score, "finance": finance_score,
               "tech": tech_score, "politics": politics_score}
     best = max(scores, key=scores.get)
-    return best if scores[best] >= 2 else "weird"
+    return best if scores[best] >= 2 else "general"
 
 
 def _rss_fetch(url: str, source: str, category: str,
@@ -196,10 +196,9 @@ def fetch_sina_finance() -> List[Article]:
 def fetch_10jqka() -> List[Article]:
     return _api_fetch(
         "https://news.10jqka.com.cn/tapp/news/push/stock/?page=1&tag=",
-        "同花顺", "auto",
+        "同花顺", "stock",
         ["data", "list"], "title", "url",
         limit=15, base_score=72.0,
-        url_prefix="https://news.10jqka.com.cn/tapp/news/push/stock/",
         summary_key="digest",
     )
 
@@ -276,6 +275,26 @@ def fetch_toutiao() -> List[Article]:
     return articles
 
 
+def fetch_random_images(count: int = 5) -> List[Article]:
+    articles: List[Article] = []
+    themes = ["山景", "海岸", "城市夜景", "森林小路", "星空"]
+    for i in range(min(count, len(themes))):
+        width = 640
+        height = 400 + i * 40
+        seed = i + 100
+        theme = themes[i]
+        url = f"https://picsum.photos/seed/{seed}/{width}/{height}"
+        articles.append(Article(
+            title=f"{theme}摄影",
+            url=url,
+            source="Lorem Picsum",
+            category="image",
+            score=63.5 - i * 0.5,
+            summary=f"{width}×{height}"
+        ))
+    return articles
+
+
 def fetch_all() -> List[Article]:
     results: List[Article] = []
     results.extend(fetch_10jqka())
@@ -284,4 +303,5 @@ def fetch_all() -> List[Article]:
     results.extend(fetch_toutiao())
     results.extend(fetch_sina_finance())
     results.extend(fetch_wallstreetcn())
+    results.extend(fetch_random_images(5))
     return results
